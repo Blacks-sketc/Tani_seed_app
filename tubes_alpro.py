@@ -1,7 +1,9 @@
 import streamlit as st
 import pandas as pd
 
-# Initialize session state variables
+# inisalisasi item pemesanan
+if 'nama_pemesan' not in st.session_state:
+    st.session_state.nama_pemesan = ""
 if 'alamat' not in st.session_state:
     st.session_state.alamat = ""
 if 'no_telepon' not in st.session_state:
@@ -17,6 +19,7 @@ if 'jumlah' not in st.session_state:
 if 'Total' not in st.session_state:
     st.session_state.Total = []
 
+#pengenalan nama kelompok
 def main():
     st.set_page_config(page_title="Tani Seed", page_icon="logo.jpg")
     st.sidebar.title("TUGAS BESAR ALGORITMA")
@@ -36,13 +39,16 @@ def main():
     st.title("TaniSeed: Platform Penjualan Bibit Buah ")
     st.header("🍎---------------------------------------------------🍎")
 
+    # inputan kebutuhan pemesanan
+    st.session_state.nama_pemesan = st.text_input("Nama Pemesan", st.session_state.nama_pemesan)
+
     st.session_state.tanggal_pemesanan = st.date_input("Tanggal pemesanan", value=None)
     st.write('Tanggal pemesanan:', st.session_state.tanggal_pemesanan)
 
     st.session_state.alamat = st.text_area("Alamat Pengiriman", st.session_state.alamat)
     st.session_state.no_telepon = st.text_input("Nomor Telepon", st.session_state.no_telepon)
   
-    st.session_state.metode_pembayaran = st.radio('Pilih metode pembayaran:', [ 'OVO', 'GoPay', 'Dana'])
+    st.session_state.metode_pembayaran = st.radio('Pilih metode pembayaran:', ['OVO', 'GoPay', 'Dana'])
 
     st.write("========================================================================================")
 
@@ -52,7 +58,7 @@ def main():
         list_buah()
 
     elif list_menu == "total dan pembayaran":
-        total()
+        total_barang()
 
     elif list_menu == "keluar aplikasi":
         save_to_excel()
@@ -79,7 +85,7 @@ def list_buah():
         st.session_state.jumlah = st.slider('Berapa pcs?', 0, 100, 2)
         st.write("Pesan", st.session_state.jumlah, 'pcs')
 
-def total():
+def total_barang():
     if st.button("Total"):
         st.session_state.Total = []
 
@@ -92,6 +98,7 @@ def total():
         st.write("Total Pembayaran = ", sum(st.session_state.Total))
         st.write("Alamat Pengiriman:", st.session_state.alamat)
         st.write("Nomor Telepon:", st.session_state.no_telepon)
+        st.write(f"Nama Pemesan: {st.session_state.nama_pemesan}")
         st.write(f"Metode Pembayaran: {st.session_state.metode_pembayaran}")
         st.image('bayar.jpg')
 
@@ -105,6 +112,7 @@ def get_harga_buah(nama_buah):
 
 def save_to_excel():
     df = pd.DataFrame({
+        'Nama Pemesan': [st.session_state.nama_pemesan],
         'Tanggal Pemesanan': [st.session_state.tanggal_pemesanan],
         'Alamat Pengiriman': [st.session_state.alamat],
         'Nomor Telepon': [st.session_state.no_telepon],
